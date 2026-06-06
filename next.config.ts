@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone", // Optimal for Docker environments
+  // Dynamically disable standalone output on Vercel to prevent build issues,
+  // but keep it active for Docker containerization.
+  output: process.env.VERCEL ? undefined : "standalone",
+  
   transpilePackages: ["framer-motion"],
+  
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
@@ -13,6 +17,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // Apply production-grade security headers
   headers: async () => {
     return [
       {
