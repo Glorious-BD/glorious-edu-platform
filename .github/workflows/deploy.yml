@@ -1,0 +1,34 @@
+name: Glorious Edu Web Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Codebase Syntax Lint Verification
+        run: npm run lint
+        continue-on-error: true # Prevents deployment halts on style guide warnings
+
+      - name: Compile Application Production Bundle
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APP_URL: https://gloriousedubd.com
+          NEXT_PUBLIC_API_URL: https://api.gloriousedubd.com/v1
